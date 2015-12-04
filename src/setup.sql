@@ -1,0 +1,8 @@
+CREATE DATABASE IF NOT EXISTS Foofle;
+USE Foofle;
+CREATE TABLE IF NOT EXISTS LookupTable
+(
+  term VARCHAR(255),
+  occur INT,
+  link VARCHAR(2000)
+);
