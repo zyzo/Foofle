@@ -51,7 +51,7 @@ public class FoofleAnalyzer {
     	@Override
     	public String toString() {
     		// TODO Auto-generated method stub
-    		return link + ", " + occur;
+    		return "[Cell " + link + ", " + occur + "]";
     	}
     }
     
@@ -80,12 +80,28 @@ public class FoofleAnalyzer {
          		}
          	}
          }
-         
+         /*
          for (Object c : map.entrySet().toArray()) {
          	Entry d = (Entry) c;
          	System.out.println(d.getKey());
-         	System.out.println(Arrays.toString(((List<String>) d.getValue()).toArray()));
+         	System.out.println(Arrays.toString(((List<Cell>) d.getValue()).toArray()));
          }
+         */
+         SqlDAO dao = SqlDAO.getInstance();
+         for (Object c : map.entrySet().toArray()) {
+          	Entry d = (Entry) c;
+          	System.out.println(d.getKey());
+          	System.out.println("Inserting " + d.getKey());
+          	System.out.println(Arrays.toString(((List<Cell>) d.getValue()).toArray()));
+          	for (Cell cell : (List<Cell>) d.getValue()) {
+          		FoofleItem item = new FoofleItem();
+          		item.setLink(cell.link);
+          		item.setOccur(cell.occur);
+          		item.setTerm((String)d.getKey());
+          		dao.insert(item);
+          	}
+          }
+         dao.close();
     }
 
     public static void main(String[] args) throws IOException {

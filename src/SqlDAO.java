@@ -22,14 +22,6 @@ public class SqlDAO {
             connection = DriverManager.getConnection(url, utilisateur, motDePasse);
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            /*
-            if (connection != null)
-                try {
-                    connection.close();
-                } catch (SQLException ignore) {
-                    ignore.printStackTrace();
-                }*/
         }
     }
 
@@ -38,8 +30,8 @@ public class SqlDAO {
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("SELECT * FROM LookupTable WHERE term='" + term + "'");
-            FoofleItem item = new FoofleItem();
             while (result.next()) {
+            	FoofleItem item = new FoofleItem();
                 item.setTerm(result.getString("term"));
                 item.setLink(result.getString("link"));
                 item.setOccur(result.getInt("occur"));
@@ -64,6 +56,14 @@ public class SqlDAO {
         return status;
     }
 
+    public void close() {
+    	if (connection != null)
+            try {
+                connection.close();
+            } catch (SQLException ignore) {
+                ignore.printStackTrace();
+            }
+    }
     private static SqlDAO sqlDAO;
     public static SqlDAO getInstance() {
         if (sqlDAO == null) {
