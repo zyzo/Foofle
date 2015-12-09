@@ -16,105 +16,102 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class FoofleAnalyzer {
-    private TextCleaner cleaner;
+	private TextCleaner cleaner;
 
-    public FoofleAnalyzer() {
-        cleaner = new TextCleaner();
-    }
+	public FoofleAnalyzer() {
+		cleaner = new TextCleaner();
+	}
 
-    public List<String> processFile(File f) throws IOException {
-        Document doc = Jsoup.parse(f, "UTF-8");
-        Elements content = doc.getElementsByTag("body");
+	public List<String> processFile(File f) throws IOException {
+		Document doc = Jsoup.parse(f, "UTF-8");
+		Elements content = doc.getElementsByTag("body");
 
-        String s = extractText(content.get(0));
-        String[] splitted = s.split("\\s+");
+		String s = extractText(content.get(0));
+		String[] splitted = s.split("\\s+");
 
-        // nettoyer les mots
-        List<String> cleanedList = cleaner.clean(Arrays.asList(splitted));
-        return cleanedList;
-    }
+		// nettoyer les mots
+		List<String> cleanedList = cleaner.clean(Arrays.asList(splitted));
+		return cleanedList;
+	}
 
-    private String extractText(Element element) {
-        String result = "";
-        for (TextNode node : element.textNodes()) {
-            if (!FoofleUtils.isNullOrEmpty(node.text()))
-                result += " " + node.text();
-        }
-        for (Element child : element.children()) {
-            String childText = extractText(child);
-            if (!FoofleUtils.isNullOrEmpty(childText))
-                result += " " + childText;
-        }
-        return result;
-    }
+	private String extractText(Element element) {
+		String result = "";
+		for (TextNode node : element.textNodes()) {
+			if (!FoofleUtils.isNullOrEmpty(node.text()))
+				result += " " + node.text();
+		}
+		for (Element child : element.children()) {
+			String childText = extractText(child);
+			if (!FoofleUtils.isNullOrEmpty(childText))
+				result += " " + childText;
+		}
+		return result;
+	}
 
-    public class Cell {
-    	String link;
-    	int occur;
-    	@Override
-    	public String toString() {
-    		// TODO Auto-generated method stub
-    		return "[Cell " + link + ", " + occur + "]";
-    	}
-    }
-    
-    public void run() throws IOException {
-         File corpusDir = new File("CORPUS");
-         File[] fileList = corpusDir.listFiles();
-         Map<String, List<Cell>> map = new HashMap<>();
-         for (File file : fileList) {
-         	List<String> terms = processFile(file);
-         	for (String term : terms) {
-         		if (map.get(term) == null) map.put(term, new ArrayList<Cell>());
-         		List<Cell> cells = map.get(term);
-         		boolean found = false;
-         		for (Cell cell: cells) {
-         			if (cell.link.equals(file.getName())) {
-         				found = true;
-         				cell.occur += 1;
-         				break;
-         			}
-         		}
-         		if (!found) {
-         			Cell cell = new Cell();
-         			cell.link = file.getName();
-         			cell.occur = 1;
-         			cells.add(cell);
-         		}
-         	}
-         }
-         /*
-         for (Object c : map.entrySet().toArray()) {
-         	Entry d = (Entry) c;
-         	System.out.println(d.getKey());
-         	System.out.println(Arrays.toString(((List<Cell>) d.getValue()).toArray()));
-         }
-         */
-         SqlDAO dao = SqlDAO.getInstance();
-         Date date1 = new Date();
-         for (Object c : map.entrySet().toArray()) {
-          	Entry d = (Entry) c;
-          	// System.out.println(d.getKey());
-          	// System.out.println("Inserting " + d.getKey());
-          	//System.out.println(Arrays.toString(((List<Cell>) d.getValue()).toArray()));
-          	for (Cell cell : (List<Cell>) d.getValue()) {
-          		FoofleItem item = new FoofleItem();
-          		item.setLink(cell.link);
-          		item.setOccur(cell.occur);
-          		item.setTerm((String)d.getKey());
-          		dao.insert(item);
-          	}
-          }
-         Date date2 = new Date();
-         long diff = date2.getTime() -  date1.getTime();
-         long nbMin = diff/60000;
-         long nbSec = (diff - nbMin)/1000;
-         System.out.println("Indexation took " + nbMin + "m" + nbSec + "s");
-         dao.close();
-    }
+	public void run() throws IOException {
+		Date date1 = new Date();
+		File corpusDir = new File("CORPUS");
+		Map<String, List<FoofleItem>> map = invertIndex(corpusDir);
+		SqlDAO dao = SqlDAO.getInstance();
 
-    public static void main(String[] args) throws IOException {
-    	FoofleAnalyzer z = new FoofleAnalyzer();
-    	z.run();
-    }
+		System.out.println("Saving to db..");
+		for (Object c : map.entrySet().toArray()) {
+			Entry d = (Entry) c;
+			for (FoofleItem item : (List<FoofleItem>) d.getValue()) {
+				dao.insert(item);
+			}
+		}
+		Date date2 = new Date();
+		long diff = date2.getTime() -  date1.getTime();
+		long nbMin = diff/60000;
+		long nbSec = (diff - nbMin)/1000;
+		System.out.println("Indexation took " + nbMin + "m" + nbSec + "s");
+		dao.close();
+	}
+
+	private Map<String, List<FoofleItem>> invertIndex(File corpusDir) throws IOException {
+		System.out.println("Inverting index..");
+		File[] fileList = corpusDir.listFiles();
+		Map<String, List<FoofleItem>> map = new HashMap<>();
+		Map<String, Integer> fileListSize = new HashMap<>();
+		int i = 0;
+		for (File file : fileList) {
+			List<String> terms = processFile(file);
+			fileListSize.put(file.getName(), terms.size());
+			for (String term : terms) {
+				if (map.get(term) == null) map.put(term, new ArrayList<FoofleItem>());
+				List<FoofleItem> FoofleItems = map.get(term);
+				boolean found = false;
+				for (FoofleItem item: FoofleItems) {
+					if (item.getLink().equals(file.getName())) {
+						found = true;
+						item.setOccur(item.getOccur()+1);
+						break;
+					}
+				}
+				if (!found) {
+					FoofleItem item = new FoofleItem();
+					item.setTerm(term);
+					item.setLink(file.getName());
+					item.setOccur(1);
+					FoofleItems.add(item);
+				}
+			}
+		}
+
+		// Add pondération
+		System.out.println("Computing ponderation (tf*idf)..");
+		for (Object c : map.entrySet().toArray()) {
+			Entry d = (Entry) c;
+			for (FoofleItem item : (List<FoofleItem>) d.getValue()) {
+				item.setTfidf(item.getOccur()/(float)(1+ Math.log(fileListSize.get(item.getLink()))));
+			}
+		}
+		return map;
+	}
+
+	public static void main(String[] args) throws IOException {
+		FoofleAnalyzer z = new FoofleAnalyzer();
+		z.run();
+	}
 }

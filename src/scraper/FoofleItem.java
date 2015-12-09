@@ -3,6 +3,7 @@ public class FoofleItem {
     private String term;
     private String link;
     private int occur;
+    private float tfidf;
 
     public String getTerm() {
         return term;
@@ -27,4 +28,17 @@ public class FoofleItem {
     public void setOccur(int occur) {
         this.occur = occur;
     }
+
+	public float getTfidf() {
+		return tfidf;
+	}
+
+	public void setTfidf(float tfidf) {
+		this.tfidf = tfidf;
+	}
+	
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "[Cell " + link + ", " + occur + ", " + tfidf + "]";
+	}
 }

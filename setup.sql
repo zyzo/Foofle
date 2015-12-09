@@ -1,8 +1,10 @@
 CREATE DATABASE IF NOT EXISTS Foofle;
 USE Foofle;
-CREATE TABLE IF NOT EXISTS LookupTable
+DROP IF EXISTS TABLE LookupTable;
+CREATE TABLE LookupTable
 (
   term VARCHAR(255),
+  link VARCHAR(2000),
   occur INT,
-  link VARCHAR(2000)
+  tfidf FLOAT
 );

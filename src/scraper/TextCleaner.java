@@ -17,7 +17,6 @@ public class TextCleaner {
             while((line = reader.readLine()) != null) {
                 stopList.add(line);
             }
-            System.out.println(stopList);
             reader.close();
             BufferedReader reader2 = new BufferedReader(
                     new InputStreamReader(

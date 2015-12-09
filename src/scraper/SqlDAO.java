@@ -38,6 +38,7 @@ public class SqlDAO {
                 item.setTerm(result.getString("term"));
                 item.setLink(result.getString("link"));
                 item.setOccur(result.getInt("occur"));
+                item.setTfidf(result.getFloat("tfidf"));
                 items.add(item);
             }
         } catch (SQLException e) {
@@ -49,8 +50,8 @@ public class SqlDAO {
     public int insert(FoofleItem item) {
         int status;
         try {
-            status = statement.executeUpdate("INSERT INTO LookupTable (term, occur, link) VALUES ('"
-                    + item.getTerm() + "', '" + item.getOccur() + "','" + item.getLink() + "')");
+            status = statement.executeUpdate("INSERT INTO LookupTable (term, occur, link, tfidf) VALUES ('"
+                    + item.getTerm() + "', '" + item.getOccur() + "','" + item.getLink() + "','" + item.getTfidf() + "')");
         } catch (SQLException e) {
             e.printStackTrace();
             return -1;
