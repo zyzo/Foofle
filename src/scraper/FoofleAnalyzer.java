@@ -6,8 +6,10 @@ import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,11 +91,12 @@ public class FoofleAnalyzer {
          }
          */
          SqlDAO dao = SqlDAO.getInstance();
+         Date date1 = new Date();
          for (Object c : map.entrySet().toArray()) {
           	Entry d = (Entry) c;
-          	System.out.println(d.getKey());
-          	System.out.println("Inserting " + d.getKey());
-          	System.out.println(Arrays.toString(((List<Cell>) d.getValue()).toArray()));
+          	// System.out.println(d.getKey());
+          	// System.out.println("Inserting " + d.getKey());
+          	//System.out.println(Arrays.toString(((List<Cell>) d.getValue()).toArray()));
           	for (Cell cell : (List<Cell>) d.getValue()) {
           		FoofleItem item = new FoofleItem();
           		item.setLink(cell.link);
@@ -102,6 +105,11 @@ public class FoofleAnalyzer {
           		dao.insert(item);
           	}
           }
+         Date date2 = new Date();
+         long diff = date2.getTime() -  date1.getTime();
+         long nbMin = diff/60000;
+         long nbSec = (diff - nbMin)/1000;
+         System.out.println("Indexation took " + nbMin + "m" + nbSec + "s");
          dao.close();
     }
 

@@ -7,6 +7,7 @@ import java.util.List;
 public class SqlDAO {
     
     private Connection connection;
+    private Statement statement;
     private SqlDAO() {
         /* Chargement du driver JDBC pour MySQL */
         try {
@@ -19,8 +20,10 @@ public class SqlDAO {
         String url = "jdbc:mysql://localhost:3306/Foofle";
         String utilisateur = "foofle";
         String motDePasse = "foo";
+
         try {
             connection = DriverManager.getConnection(url, utilisateur, motDePasse);
+            statement = connection.createStatement();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -29,7 +32,6 @@ public class SqlDAO {
     public List<FoofleItem> get(String term) {
         List<FoofleItem> items = new ArrayList<>();
         try {
-            Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("SELECT * FROM LookupTable WHERE term='" + term + "'");
             while (result.next()) {
             	FoofleItem item = new FoofleItem();
@@ -47,7 +49,6 @@ public class SqlDAO {
     public int insert(FoofleItem item) {
         int status;
         try {
-            Statement statement = connection.createStatement();
             status = statement.executeUpdate("INSERT INTO LookupTable (term, occur, link) VALUES ('"
                     + item.getTerm() + "', '" + item.getOccur() + "','" + item.getLink() + "')");
         } catch (SQLException e) {
