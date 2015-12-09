@@ -1,0 +1,27 @@
+Q1
+mots clés : personnes, Intouchables
+description : Quelles sont les personnes impliquées dans le film Intouchables?
+Q2
+mots clés : lieu, naissance, Omar Sy
+description : Quel est le lieu de naissance d'Omar Sy?
+Q3
+mots clés :personnes, récompensées, Intouchables
+description : Qui a até récompensé pour Intouchables?
+Q4
+mots clés : palmarès, Globes de Cristal, 2012
+description : Quel est le palmarès des Globes de Cristal 2012?
+Q5
+mots clés : membre, jury, Globes de Cristal, 2012
+description : Quels sont les membres du jury du Globes de Cristal 2012?
+Q6
+mots clés : prix, Omar Sy, Globes de Cristal, 2012
+description : Quels prix ont été décernés à Omar Sy aux Globes de Cristal 2012?
+Q7
+mots clés : lieu, Globes Cristal, 2012
+description : Où a eu lieu les Globes de Cristal 2012?
+Q8
+mots clés :prix, Omar Sy
+description :Quels prix ont été décernés à Omar Sy?
+Q9
+mots clés : acteurs, joué avec, Omar Sy
+description : Quels acteurs ont joué avec Omar Sy?
