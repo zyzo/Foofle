@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class FoofleAnalyzer {
+public class FoofleIndexation {
 	private TextCleaner cleaner;
 
-	public FoofleAnalyzer() {
+	public FoofleIndexation() {
 		cleaner = new TextCleaner();
 	}
 
@@ -111,7 +111,7 @@ public class FoofleAnalyzer {
 	}
 
 	public static void main(String[] args) throws IOException {
-		FoofleAnalyzer z = new FoofleAnalyzer();
+		FoofleIndexation z = new FoofleIndexation();
 		z.run();
 	}
 }
