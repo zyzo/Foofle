@@ -1,3 +1,4 @@
+package scraper;
 public class FoofleItem {
     private String term;
     private String link;
