@@ -58,6 +58,33 @@ public class SqlDAO {
         }
         return status;
     }
+    
+    public int insert(List<FoofleItem> items) {
+        int status;
+        int limit = 800;
+        try {
+        	System.out.println("Constructing INSERT query of " + items.size() + "..");
+        	int cnt = 0;
+        	while (cnt < items.size()) {
+	        	String queryString = "INSERT INTO LookupTable (term, occur, link, tfidf) VALUES ";
+	        	for (int i = 0; i < limit && cnt < items.size(); i++) {
+	        		FoofleItem item = items.get(cnt);
+	        		queryString += "('" + item.getTerm() + "', '" + item.getOccur() + "','" + item.getLink() + "','" + item.getTfidf() + "')";
+	        		if (i == limit - 1 || cnt == items.size() - 1) {
+	        			queryString += ";";
+	        		} else {
+	        			queryString += ", ";
+	        		}
+	        		cnt += 1;
+	        	}
+	        	status = statement.executeUpdate(queryString);
+        	}
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+        return 0;
+    }
 
     public void close() {
     	if (connection != null)

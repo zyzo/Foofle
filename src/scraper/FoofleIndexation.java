@@ -55,12 +55,11 @@ public class FoofleIndexation {
 		SqlDAO dao = SqlDAO.getInstance();
 
 		System.out.println("Saving to db..");
-		for (Object c : map.entrySet().toArray()) {
-			Entry d = (Entry) c;
-			for (FoofleItem item : (List<FoofleItem>) d.getValue()) {
-				dao.insert(item);
-			}
+		List<FoofleItem> items = new ArrayList<>();
+		for (Entry<String, List<FoofleItem>> c : map.entrySet()) {
+			items.addAll(c.getValue());
 		}
+		dao.insert(items);
 		Date date2 = new Date();
 		long diff = date2.getTime() -  date1.getTime();
 		long nbMin = diff/60000;
