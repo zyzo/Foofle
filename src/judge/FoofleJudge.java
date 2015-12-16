@@ -69,7 +69,6 @@ public class FoofleJudge {
 		QRELS_RESULT = new ArrayList<>();
 		for (String qrel: QRELS) {
 			QRELS_RESULT.add(FoofleSearch.search(qrel));
-			System.out.println("Result for '" + qrel + "': " + QRELS_RESULT.get(QRELS_RESULT.size()-1).toString() );
 		}
 	}
 
@@ -84,7 +83,6 @@ public class FoofleJudge {
 			Map<String, Double> currentEval = EVAL.get(i);
 			for (int j = 0; j < num; j++) {
 				String document = searchResult.get(j);
-				System.out.println(i +" "+ j + " " + document);
 				if (currentEval.containsKey(document))
 					judgeValue += currentEval.get(document);
 			}
@@ -96,6 +94,6 @@ public class FoofleJudge {
 
 	public static void main(String[] args) throws IOException, ParseException, FoofleJudgeException {
 		FoofleJudge judge = new FoofleJudge();
-		System.out.print(Arrays.toString(judge.judge(3)));
+		System.out.print(Arrays.toString(judge.judge(5)));
 	}
 }
