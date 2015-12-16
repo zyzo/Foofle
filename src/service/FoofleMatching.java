@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.print.attribute.HashAttributeSet;
 
 import scraper.FoofleItem;
+import scraper.FoofleUtils;
 import scraper.SqlDAO;
 
 
@@ -31,7 +32,6 @@ public class FoofleMatching {
 		List<Integer> queryWeights = new ArrayList<>(queryTerms.length);
 		for (int i = 0; i < queryTerms.length; i++) queryWeights.add(1);
 		Map<String, List<Integer>> vector = constructVector(queryTerms);
-		printVector(vector);
 
 		Map<String, Double> res = new HashMap<>();
 		
@@ -87,18 +87,10 @@ public class FoofleMatching {
 		}
 		return convertedVector;	
 	}
-	private static void printVector(Map mapVector) {
-		for (Object e : mapVector.entrySet()){
-			Entry<String, Object> entry = (Entry<String, Object>) e;
-			String key = entry.getKey().toString();;
-            Object value = entry.getValue();
-            System.out.println("key =" + key + " value =" + value.toString() ); 
-		}
-	}
+	
 	public static void main(String[] args) {
 		FoofleMatching foo = new FoofleMatching();
 		Map<String, Double> res = foo.mesureCosinus("Adama Intouchables");
-		printVector(res);
-		
+		FoofleUtils.printVector(res);
 	}
 }
