@@ -78,8 +78,8 @@ public class FoofleJudge {
 			Map<String, Double> currentEval = EVAL.get(i);
 			for (int j = 0; j < searchResult.size() && j < num; j++) {
 				String document = searchResult.get(j);
-				if (currentEval.containsKey(document))
-					judgeValue += currentEval.get(document);
+				if (currentEval.containsKey(document) && currentEval.get(document) >= 0.5)
+					judgeValue += 1;
 			}
 			judgeValues[i] = judgeValue / num;
 		}
