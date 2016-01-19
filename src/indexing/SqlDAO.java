@@ -1,6 +1,12 @@
-package scraper;
+package indexing;
 
-import java.sql.*;
+import java.io.File;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,9 +67,11 @@ public class SqlDAO {
     
     public int insert(List<FoofleItem> items) {
         int status;
-        int limit = 800;
+        int limit = 1000;
         try {
         	System.out.println("Constructing INSERT query of " + items.size() + "..");
+        	File a = new File("a");
+        	PrintWriter writer = new PrintWriter(a);
         	int cnt = 0;
         	while (cnt < items.size()) {
 	        	String queryString = "INSERT INTO LookupTable (term, occur, link, tfidf) VALUES ";
@@ -77,9 +85,13 @@ public class SqlDAO {
 	        		}
 	        		cnt += 1;
 	        	}
-	        	status = statement.executeUpdate(queryString);
+	        	writer.write(queryString + "\n");
+	        	if (cnt == items.size()) {
+	        		System.out.println(queryString);
+	        	}
+	        	//status = statement.executeUpdate(queryString);
         	}
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return -1;
         }

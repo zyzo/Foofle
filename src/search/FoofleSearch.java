@@ -1,4 +1,4 @@
-package service;
+package search;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,16 +20,21 @@ public class FoofleSearch {
 	public static List<String> search(String query) {
 		FoofleMatching foo = new FoofleMatching();
 		Map<String, Double> res = foo.mesureCosinus("Adama Intouchables");
-		Map<Double, String> reverseRes = new HashMap<>();
+		Map<Double, List<String>> reverseRes = new HashMap<>();
 		for (Entry<String, Double> e:res.entrySet()) {
-			reverseRes.put(e.getValue(), e.getKey());
+			List<String> listItems = reverseRes.get(e.getValue());
+			if (listItems == null) {
+				listItems = new ArrayList<>();
+			}
+			listItems.add(e.getKey());
+			reverseRes.put(e.getValue(), listItems);
 		}
 		SortedSet<Double> keys = new TreeSet<Double>(descendingComparator);
 		keys.addAll(reverseRes.keySet());
 		List<String> result = new ArrayList<>();
 		for (Double key: keys) {
-			String value = reverseRes.get(key);
-			result.add(value);
+			List<String> values = reverseRes.get(key);
+			for (String value: values) result.add(value);
 		}
 		return result;
 	}

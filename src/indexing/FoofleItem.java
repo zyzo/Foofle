@@ -1,4 +1,4 @@
-package scraper;
+package indexing;
 public class FoofleItem {
     private String term;
     private String link;
@@ -38,7 +38,6 @@ public class FoofleItem {
 	}
 	
 	public String toString() {
-		// TODO Auto-generated method stub
-		return "[Cell " + link + ", " + occur + ", " + tfidf + "]";
+		return "[FoofleItem " + link + ", " + occur + ", " + tfidf + "]";
 	}
 }

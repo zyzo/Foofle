@@ -1,4 +1,4 @@
-package judge;
+package eval;
 
 public class FoofleJudgeException extends Exception {
 

@@ -1,7 +1,6 @@
-package service;
+package search;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,11 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.print.attribute.HashAttributeSet;
-
-import scraper.FoofleItem;
-import scraper.FoofleUtils;
-import scraper.SqlDAO;
+import indexing.FoofleItem;
+import indexing.FoofleUtils;
+import indexing.SqlDAO;
 
 
 
