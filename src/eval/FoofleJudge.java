@@ -14,6 +14,9 @@ import java.util.Map;
 
 import indexing.FoofleUtils;
 import search.FoofleSearch;
+import select.Evaluation;
+import select.FoofleConfig;
+import select.Ponderation;
 
 public class FoofleJudge {
 	public final String[] QRELS = {
@@ -100,7 +103,7 @@ public class FoofleJudge {
 		}
 	}
 
-	public static void main(String[] args) throws IOException, ParseException, FoofleJudgeException {
+	public static void runJudge() throws IOException, ParseException, FoofleJudgeException {
 		FoofleJudge judge = new FoofleJudge();
 		System.out.println("\n==== Q5 ===== \n");
 		double[] judge5 = judge.judge(5);
@@ -119,5 +122,16 @@ public class FoofleJudge {
 				FoofleUtils.doubleToString(avg(judge5)) + " " +
 				FoofleUtils.doubleToString(avg(judge10)) + " " +
 				FoofleUtils.doubleToString(avg(judge25)));
+	}
+	
+	public static void main(String[] args) throws IOException, ParseException, FoofleJudgeException {
+		for (Ponderation p : Ponderation.values()) {
+			for (Evaluation e: Evaluation.values()) 
+			{
+				FoofleConfig.PONDERATION = p;
+				FoofleConfig.EVALUATION = e;
+				runJudge();
+			}
+		}
 	}
 }

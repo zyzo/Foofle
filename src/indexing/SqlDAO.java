@@ -90,7 +90,7 @@ public class SqlDAO {
 	        	if (cnt == items.size()) {
 	        		System.out.println(queryString);
 	        	}
-	        	//status = statement.executeUpdate(queryString);
+	        	status = statement.executeUpdate(queryString);
         	}
         } catch (Exception e) {
             e.printStackTrace();

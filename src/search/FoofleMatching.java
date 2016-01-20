@@ -12,6 +12,7 @@ import java.util.Set;
 import indexing.FoofleItem;
 import indexing.FoofleUtils;
 import indexing.SqlDAO;
+import select.FoofleConfig;
 
 
 
@@ -23,22 +24,21 @@ public class FoofleMatching {
 		dao = SqlDAO.getInstance();
 	}
 	
-	// sum(XnY)/(sqrt(X)*sqrt(Y)
 	public Map<String, Double> mesureCosinus(String query) {
 		String[] queryTerms = query.split(" ");
-		List<Integer> queryWeights = new ArrayList<>(queryTerms.length);
-		for (int i = 0; i < queryTerms.length; i++) queryWeights.add(1);
-		Map<String, List<Integer>> vector = constructVector(queryTerms);
-
+		List<Double> queryWeights = new ArrayList<>(queryTerms.length);
+		for (int i = 0; i < queryTerms.length; i++) queryWeights.add(1.0);
+		Map<String, List<Double>> vector = constructVector(queryTerms);
 		Map<String, Double> res = new HashMap<>();
 		
-		for (Entry<String, List<Integer>> entry: vector.entrySet()) {
+		for (Entry<String, List<Double>> entry: vector.entrySet()) {
 			res.put(entry.getKey(), cosinus(queryWeights, entry.getValue()));
 		}
 		return res;
 	}
-
-	private double cosinus(List<Integer> l1, List<Integer> l2) {
+	
+	// sum(XnY)/(sqrt(X)*sqrt(Y)
+	private double cosinus(List<Double> l1, List<Double> l2) {
 		assert(l1.size() == l2.size());
 		double sumXnY = 0;
 		double sqrtX = 0;
@@ -53,31 +53,39 @@ public class FoofleMatching {
 		return sumXnY/(sqrtX*sqrtY);
 	}
 
-	private Map<String, List<Integer>> constructVector(String[] queryTerms) {
+	private Map<String, List<Double>> constructVector(String[] queryTerms) {
 		// set de documents concernés
 		Set<String> docs = new HashSet<>();
-		Map<String, Map<String, Integer>> vector = new HashMap<>();
+		Map<String, Map<String, Double>> vector = new HashMap<>();
 		for (String term: queryTerms) {
-			Map<String, Integer> list = new HashMap<>();
+			Map<String, Double> list = new HashMap<>();
 			List<FoofleItem> items = dao.get(term);
 			for (FoofleItem item: items) {
-				Map<String, Integer> map = vector.get(item.getLink());
+				Map<String, Double> map = vector.get(item.getLink());
 				if (map == null) map = new HashMap<>();
-				map.put(term, item.getOccur());
+				switch(FoofleConfig.PONDERATION) {
+				case NUM_OCCURS :
+					map.put(term, (double) item.getOccur());
+					break;
+				case TF_IDF:
+					map.put(term, (double) item.getTfidf());
+					break;
+				case ROBERTSON_TF:
+					map.put(term, (double) item.getRobertsonTF());
+				}
 				vector.put(item.getLink(), map);
 				docs.add(item.getLink());
 			}
 		}
-		
-		Map<String, List<Integer>> convertedVector = new HashMap<>();
+		Map<String, List<Double>> convertedVector = new HashMap<>();
 		Iterator<String> it = docs.iterator();
 		while(it.hasNext()) {
 			String link = it.next();
-			List<Integer> list = new ArrayList<>();
-			Map<String, Integer> savedList = vector.get(link);
+			List<Double> list = new ArrayList<>();
+			Map<String, Double> savedList = vector.get(link);
 			for (String term: queryTerms) {
-				Integer occur = savedList.get(term);
-				if (occur == null) list.add(0);
+				Double occur = savedList.get(term);
+				if (occur == null) list.add(0.0);
 				else list.add(occur);
 			}
 			convertedVector.put(link, list);

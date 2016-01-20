@@ -10,6 +10,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class FoofleSearch {
+	
+	private static FoofleMatching foo = new FoofleMatching();;
 	static Comparator<Double> descendingComparator = new Comparator<Double>() {
 		  public int compare(Double o1, Double o2) {
 		    if (o1 > o2) return -1;
@@ -18,7 +20,6 @@ public class FoofleSearch {
 		  }
 	};
 	public static List<String> search(String query) {
-		FoofleMatching foo = new FoofleMatching();
 		Map<String, Double> res = foo.mesureCosinus("Adama Intouchables");
 		Map<Double, List<String>> reverseRes = new HashMap<>();
 		for (Entry<String, Double> e:res.entrySet()) {
