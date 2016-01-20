@@ -45,6 +45,7 @@ public class SqlDAO {
                 item.setLink(result.getString("link"));
                 item.setOccur(result.getInt("occur"));
                 item.setTfidf(result.getFloat("tfidf"));
+                item.setRobertsonTF(result.getFloat("robertsontf"));
                 items.add(item);
             }
         } catch (SQLException e) {
@@ -56,8 +57,8 @@ public class SqlDAO {
     public int insert(FoofleItem item) {
         int status;
         try {
-            status = statement.executeUpdate("INSERT INTO LookupTable (term, occur, link, tfidf) VALUES ('"
-                    + item.getTerm() + "', '" + item.getOccur() + "','" + item.getLink() + "','" + item.getTfidf() + "')");
+            status = statement.executeUpdate("INSERT INTO LookupTable (term, occur, link, tfidf, robertsontf) VALUES ('"
+                    + item.getTerm() + "', '" + item.getOccur() + "','" + item.getLink() + "','" + item.getTfidf() + "','" + item.getRobertsonTF() + "')");
         } catch (SQLException e) {
             e.printStackTrace();
             return -1;
@@ -74,10 +75,10 @@ public class SqlDAO {
         	PrintWriter writer = new PrintWriter(a);
         	int cnt = 0;
         	while (cnt < items.size()) {
-	        	String queryString = "INSERT INTO LookupTable (term, occur, link, tfidf) VALUES ";
+	        	String queryString = "INSERT INTO LookupTable (term, occur, link, tfidf, robertsontf) VALUES ";
 	        	for (int i = 0; i < limit && cnt < items.size(); i++) {
 	        		FoofleItem item = items.get(cnt);
-	        		queryString += "('" + item.getTerm() + "', '" + item.getOccur() + "','" + item.getLink() + "','" + item.getTfidf() + "')";
+	        		queryString += "('" + item.getTerm() + "', '" + item.getOccur() + "','" + item.getLink() + "','" + item.getTfidf() + "','" + item.getRobertsonTF() + "')";
 	        		if (i == limit - 1 || cnt == items.size() - 1) {
 	        			queryString += ";";
 	        		} else {

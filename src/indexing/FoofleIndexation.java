@@ -99,15 +99,25 @@ public class FoofleIndexation {
 		}
 
 		// Add pondération
-		System.out.println("Computing ponderation (tf*idf)..");
-		for (Object c : map.entrySet().toArray()) {
+		System.out.println("Computing ponderation (tf*idf, RobertsonTF, etc.)..");
+		double avgFileSize = 0;
+		for (int size : fileListSize.values()) {
+			avgFileSize += size;
+		}
+		avgFileSize /= fileListSize.values().size();
+		System.out.println("Average file size : " + avgFileSize);
+		
+		for (Object c: map.entrySet().toArray()) {
 			Entry d = (Entry) c;
 			for (FoofleItem item : (List<FoofleItem>) d.getValue()) {
-				item.setTfidf(item.getOccur()/(float)(1+ Math.log(fileListSize.get(item.getLink()))));
+				int fileSize = fileListSize.get(item.getLink());
+				item.setTfidf(item.getOccur()/(float)(1+ Math.log(fileSize)));
+				item.setRobertsonTF(item.getOccur()/ (item.getOccur() + 0.5 + 1.5*(fileSize / avgFileSize)));
 			}
 		}
 		return map;
 	}
+
 
 	public static void main(String[] args) throws IOException {
 		FoofleIndexation z = new FoofleIndexation();

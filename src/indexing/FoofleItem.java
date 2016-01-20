@@ -4,6 +4,7 @@ public class FoofleItem {
     private String link;
     private int occur;
     private float tfidf;
+	private double robertsonTF;
 
     public String getTerm() {
         return term;
@@ -39,5 +40,13 @@ public class FoofleItem {
 	
 	public String toString() {
 		return "[FoofleItem " + link + ", " + occur + ", " + tfidf + "]";
+	}
+
+	public double getRobertsonTF() {
+		return robertsonTF;
+	}
+
+	public void setRobertsonTF(double robertsonTF) {
+		this.robertsonTF = robertsonTF;
 	}
 }

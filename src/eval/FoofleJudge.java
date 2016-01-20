@@ -114,5 +114,10 @@ public class FoofleJudge {
 		double[] judge25 = judge.judge(25);
 		print(judge25);
 		System.out.println(FoofleUtils.doubleToString(avg(judge25)));
+		System.out.println("Max étudiants   : 0.89  0.74  0.72");
+		System.out.println("Moyenne         : " +
+				FoofleUtils.doubleToString(avg(judge5)) + " " +
+				FoofleUtils.doubleToString(avg(judge10)) + " " +
+				FoofleUtils.doubleToString(avg(judge25)));
 	}
 }
