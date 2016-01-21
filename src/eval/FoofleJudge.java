@@ -105,31 +105,36 @@ public class FoofleJudge {
 
 	public static void runJudge() throws IOException, ParseException, FoofleJudgeException {
 		FoofleJudge judge = new FoofleJudge();
-		System.out.println("\n==== Q5 ===== \n");
+		//System.out.println("\n==== Q5 ===== \n");
 		double[] judge5 = judge.judge(5);
-		print(judge5);
-		System.out.println(FoofleUtils.doubleToString(avg(judge5)));
-		System.out.println("\n==== Q10 ===== \n");
+		//print(judge5);
+		//System.out.println(FoofleUtils.doubleToString(avg(judge5)));
+		//System.out.println("\n==== Q10 ===== \n");
 		double[] judge10 = judge.judge(10);
-		print(judge10);
-		System.out.println(FoofleUtils.doubleToString(avg(judge10)));
-		System.out.println("\n==== Q25 ===== \n");
+		//print(judge10);
+		//System.out.println(FoofleUtils.doubleToString(avg(judge10)));
+		//System.out.println("\n==== Q25 ===== \n");
 		double[] judge25 = judge.judge(25);
-		print(judge25);
-		System.out.println(FoofleUtils.doubleToString(avg(judge25)));
-		System.out.println("Max étudiants   : 0.89  0.74  0.72");
-		System.out.println("Moyenne         : " +
+		//print(judge25);
+		//System.out.println(FoofleUtils.doubleToString(avg(judge25)));
+		//System.out.println("Max étudiants   : 0.89  0.74  0.72");
+		System.out.println(
 				FoofleUtils.doubleToString(avg(judge5)) + " " +
 				FoofleUtils.doubleToString(avg(judge10)) + " " +
 				FoofleUtils.doubleToString(avg(judge25)));
 	}
 	
 	public static void main(String[] args) throws IOException, ParseException, FoofleJudgeException {
+		int size = 50;
 		for (Ponderation p : Ponderation.values()) {
 			for (Evaluation e: Evaluation.values()) 
 			{
 				FoofleConfig.PONDERATION = p;
 				FoofleConfig.EVALUATION = e;
+				int restant = size - FoofleConfig.PONDERATION.name().length() - FoofleConfig.EVALUATION.name().length();
+				String toInsert = "";
+				for (int i = 0; i < restant; i++) toInsert += " ";
+				System.out.print(FoofleConfig.PONDERATION.name() + "-" + FoofleConfig.EVALUATION.name() + toInsert);
 				runJudge();
 			}
 		}

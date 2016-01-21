@@ -24,7 +24,7 @@ public class FoofleMatching {
 		dao = SqlDAO.getInstance();
 	}
 	
-	public Map<String, Double> mesureCosinus(String query) {
+	public Map<String, Double> mesure(String query) {
 		String[] queryTerms = query.split(" ");
 		List<Double> queryWeights = new ArrayList<>(queryTerms.length);
 		for (int i = 0; i < queryTerms.length; i++) queryWeights.add(1.0);
@@ -32,13 +32,62 @@ public class FoofleMatching {
 		Map<String, Double> res = new HashMap<>();
 		
 		for (Entry<String, List<Double>> entry: vector.entrySet()) {
-			res.put(entry.getKey(), cosinus(queryWeights, entry.getValue()));
+			res.put(entry.getKey(), modeleVectoriel(queryWeights, entry.getValue()));
 		}
 		return res;
 	}
 	
+	private double modeleVectoriel(List<Double> l1, List<Double> l2) {
+		switch (FoofleConfig.EVALUATION) {
+		case MESURE_COSINUS:
+			return modeleCosinus(l1, l2);
+		case PRODUIT_SCALAIRE:
+			return modeleScalaire(l1, l2);
+		case DICE:
+			return modeleDice(l1, l2);
+		case JACCARD:
+			return modeleJaccard(l1,l2);
+		default:
+			throw new RuntimeException();
+		}
+	}
+	
+	private double modeleJaccard(List<Double> l1, List<Double> l2) {
+		double result = 0;
+		double sumXnY = 0;
+		double sqrtX = 0;
+		double sqrtY = 0;
+		for (int i = 0; i < l1.size(); i++) {
+			sumXnY += l1.get(i)*l2.get(i);
+			sqrtX += l1.get(i)*l1.get(i);
+			sqrtY += l2.get(i)*l2.get(i);
+		}
+		return sumXnY / (sqrtX + sqrtY - sumXnY);
+	}
+
+	private double modeleDice(List<Double> l1, List<Double> l2) {
+		double result = 0;
+		double sumXnY = 0;
+		double sqrtX = 0;
+		double sqrtY = 0;
+		for (int i = 0; i < l1.size(); i++) {
+			sumXnY += l1.get(i)*l2.get(i);
+			sqrtX += l1.get(i)*l1.get(i);
+			sqrtY += l2.get(i)*l2.get(i);
+		}
+		return 2*sumXnY/(sqrtX+sqrtY);
+	}
+
+	private double modeleScalaire(List<Double> l1, List<Double> l2) {
+		double result = 0;
+		for (int i = 0; i < l1.size(); i++) {
+			result += l1.get(i)*l2.get(i);
+		}
+		return result;
+	}
+
 	// sum(XnY)/(sqrt(X)*sqrt(Y)
-	private double cosinus(List<Double> l1, List<Double> l2) {
+	private double modeleCosinus(List<Double> l1, List<Double> l2) {
 		assert(l1.size() == l2.size());
 		double sumXnY = 0;
 		double sqrtX = 0;
@@ -63,16 +112,7 @@ public class FoofleMatching {
 			for (FoofleItem item: items) {
 				Map<String, Double> map = vector.get(item.getLink());
 				if (map == null) map = new HashMap<>();
-				switch(FoofleConfig.PONDERATION) {
-				case NUM_OCCURS :
-					map.put(term, (double) item.getOccur());
-					break;
-				case TF_IDF:
-					map.put(term, (double) item.getTfidf());
-					break;
-				case ROBERTSON_TF:
-					map.put(term, (double) item.getRobertsonTF());
-				}
+				map.put(term, FoofleUtils.getEvaluation(item));
 				vector.put(item.getLink(), map);
 				docs.add(item.getLink());
 			}
@@ -95,7 +135,7 @@ public class FoofleMatching {
 	
 	public static void main(String[] args) {
 		FoofleMatching foo = new FoofleMatching();
-		Map<String, Double> res = foo.mesureCosinus("Adama Intouchables");
+		Map<String, Double> res = foo.mesure("Adama Intouchables");
 		FoofleUtils.printVector(res);
 	}
 }

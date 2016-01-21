@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import indexing.FoofleUtils;
+
 public class FoofleSearch {
 	
 	private static FoofleMatching foo = new FoofleMatching();;
@@ -20,7 +22,7 @@ public class FoofleSearch {
 		  }
 	};
 	public static List<String> search(String query) {
-		Map<String, Double> res = foo.mesureCosinus("Adama Intouchables");
+		Map<String, Double> res = foo.mesure(query);
 		Map<Double, List<String>> reverseRes = new HashMap<>();
 		for (Entry<String, Double> e:res.entrySet()) {
 			List<String> listItems = reverseRes.get(e.getValue());

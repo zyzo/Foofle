@@ -86,10 +86,6 @@ public class SqlDAO {
 	        		}
 	        		cnt += 1;
 	        	}
-	        	writer.write(queryString + "\n");
-	        	if (cnt == items.size()) {
-	        		System.out.println(queryString);
-	        	}
 	        	status = statement.executeUpdate(queryString);
         	}
         } catch (Exception e) {

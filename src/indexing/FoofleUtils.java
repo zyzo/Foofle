@@ -6,6 +6,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import select.FoofleConfig;
+
 public class FoofleUtils {
     public static boolean isNullOrEmpty(String s) {
         return s == null || "".equals(s.trim()
@@ -36,9 +38,19 @@ public class FoofleUtils {
 		return result;
     }
 
-    public static void main(String[] args) {
-        System.out.println(isNullOrEmpty("      "));
+    public static Double getEvaluation(FoofleItem item) {
+    	switch(FoofleConfig.PONDERATION) {
+	    case NUM_OCCURS :
+			return (double) item.getOccur();
+		case TF_IDF:
+			return (double) item.getTfidf();
+		case ROBERTSON_TF:
+			return item.getRobertsonTF();
+		default:
+			throw new RuntimeException();
+		}
     }
+    
     
     public static void printVector(Map mapVector) {
 		for (Object e : mapVector.entrySet()){
