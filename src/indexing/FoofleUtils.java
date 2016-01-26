@@ -46,6 +46,12 @@ public class FoofleUtils {
 			return (double) item.getTfidf();
 		case ROBERTSON_TF:
 			return item.getRobertsonTF();
+		case TF_NORMALIZED:
+			return item.getNormalizedTF();
+		case TAGS_HTML:
+			return item.getHtmlp();
+		case CUSTOM_ROBERTSON_TF:
+			return item.getCustomRobertsonTF();
 		default:
 			throw new RuntimeException();
 		}

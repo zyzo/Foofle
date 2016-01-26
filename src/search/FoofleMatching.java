@@ -12,7 +12,9 @@ import java.util.Set;
 import indexing.FoofleItem;
 import indexing.FoofleUtils;
 import indexing.SqlDAO;
+import select.Evaluation;
 import select.FoofleConfig;
+import select.Ponderation;
 
 
 
@@ -24,11 +26,11 @@ public class FoofleMatching {
 		dao = SqlDAO.getInstance();
 	}
 	
-	public Map<String, Double> mesure(String query) {
-		String[] queryTerms = query.split(" ");
-		List<Double> queryWeights = new ArrayList<>(queryTerms.length);
-		for (int i = 0; i < queryTerms.length; i++) queryWeights.add(1.0);
-		Map<String, List<Double>> vector = constructVector(queryTerms);
+	public Map<String, Double> mesure(String[] query) {
+		//String[] queryTerms = query.split(" ");
+		List<Double> queryWeights = new ArrayList<>(query.length);
+		for (int i = 0; i < query.length; i++) queryWeights.add(1.0);
+		Map<String, List<Double>> vector = constructVector(query);
 		Map<String, Double> res = new HashMap<>();
 		
 		for (Entry<String, List<Double>> entry: vector.entrySet()) {
@@ -134,8 +136,10 @@ public class FoofleMatching {
 	}
 	
 	public static void main(String[] args) {
+		FoofleConfig.PONDERATION = Ponderation.CUSTOM_ROBERTSON_TF;
+		FoofleConfig.EVALUATION = Evaluation.PRODUIT_SCALAIRE;
 		FoofleMatching foo = new FoofleMatching();
-		Map<String, Double> res = foo.mesure("Adama Intouchables");
+		Map<String, Double> res = foo.mesure(new String[]{"personnes","Intouchables"});
 		FoofleUtils.printVector(res);
 	}
 }

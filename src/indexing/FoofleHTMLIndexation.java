@@ -15,23 +15,58 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
-public class FoofleIndexation {
+public class FoofleHTMLIndexation {
 	private TextCleaner cleaner;
-
-	public FoofleIndexation() {
+	private HTMLTagsPonderation tagLib;
+	public FoofleHTMLIndexation() {
 		cleaner = new TextCleaner();
+		tagLib = new HTMLTagsPonderation();
 	}
 
-	public List<String> processFile(File f) throws IOException {
+	public Map<String, Integer> processFileHTML(File f) throws IOException {
 		Document doc = Jsoup.parse(f, "UTF-8");
-		Elements content = doc.getElementsByTag("body");
-
-		String s = extractText(content.get(0));
-		String[] splitted = s.split("\\s+");
-
+		Element html = doc.getElementsByTag("html").get(0);
+		Map<String, Integer> htmlResult = new HashMap<>();
+		// special tags (h1, title, ..)
+		for (Entry<String, Integer> tag: tagLib.SPECIAL_TAGS_MAP.entrySet()) {
+			Elements elements = html.getElementsByTag(tag.getKey());
+			for (Element e : elements) {
+				String[] splitted = e.text().split("\\s+");
+				List<String> cleaned = cleaner.clean(Arrays.asList(splitted));
+				for (String s: cleaned) putResult(htmlResult, s, tag.getValue());
+			}
+		}
+		// meta tags
+		for (Element metaTag: html.getElementsByTag("meta")) {
+			Integer value = tagLib.META_KEYWORDS_MAPS.get(metaTag.attr("keyword"));
+			if (value == null) continue;
+			String[] splitted = metaTag.attr("content").split("\\s+");
+			List<String> cleaned = cleaner.clean(Arrays.asList(splitted));
+			for (String s: cleaned) putResult(htmlResult, s, value);
+		}
+		// normal body text
+		Element body = doc.getElementsByTag("body").get(0);
+		String bodyText = extractText(body);
 		// nettoyer les mots
-		List<String> cleanedList = cleaner.clean(Arrays.asList(splitted));
-		return cleanedList;
+		List<String> normalString = cleaner.clean(Arrays.asList(bodyText));
+		for (String s: normalString) putResult(htmlResult, s, 1);
+		return htmlResult;
+	}
+	public List<String> processFile(File f) throws IOException {
+		// normal body text
+		Document doc = Jsoup.parse(f, "UTF-8");
+		Element body = doc.getElementsByTag("body").get(0);
+		String bodyText = extractText(body);
+		// nettoyer les mots
+		List<String> normalString = cleaner.clean(Arrays.asList(bodyText));
+		return normalString;
+	}
+
+	private void putResult(Map<String, Integer> result, String s, Integer value) {
+		Integer oldValue = result.get(s);
+		if (oldValue == null) result.put(s, value);
+		else result.put(s, oldValue+value);
+		
 	}
 
 	private String extractText(Element element) {
@@ -76,8 +111,9 @@ public class FoofleIndexation {
 		int i = 0;
 		for (File file : fileList) {
 			List<String> terms = processFile(file);
+			Map<String, Integer> htmlTerms = processFileHTML(file);
 			fileListSize.put(file.getName(), terms.size());
-			for (String term : terms) {
+			for (String term: terms) {
 				if (map.get(term) == null) map.put(term, new ArrayList<FoofleItem>());
 				List<FoofleItem> FoofleItems = map.get(term);
 				boolean found = false;
@@ -93,6 +129,7 @@ public class FoofleIndexation {
 					item.setTerm(term);
 					item.setLink(file.getName());
 					item.setOccur(1);
+					item.setHTMLP((htmlTerms.get(term)));
 					FoofleItems.add(item);
 				}
 			}
@@ -112,7 +149,8 @@ public class FoofleIndexation {
 			for (FoofleItem item : (List<FoofleItem>) d.getValue()) {
 				int fileSize = fileListSize.get(item.getLink());
 				item.setTfidf(item.getOccur()/(float)(1+ Math.log(fileSize)));
-				item.setRobertsonTF(item.getOccur()/ (item.getOccur() + 2*(fileSize / avgFileSize)));
+				item.setCustomRobertsonTF(item.getOccur()/ (item.getOccur() + 2*(fileSize / avgFileSize)));
+				item.setRobertsonTF(item.getOccur()/ (item.getOccur() + 0.5 + 1.5*(fileSize/avgFileSize)));
 				item.setNormalizedTF(item.getOccur()/(float)fileSize);
 			}
 		}
@@ -121,7 +159,7 @@ public class FoofleIndexation {
 
 
 	public static void main(String[] args) throws IOException {
-		FoofleIndexation z = new FoofleIndexation();
+		FoofleHTMLIndexation z = new FoofleHTMLIndexation();
 		z.run();
 	}
 }

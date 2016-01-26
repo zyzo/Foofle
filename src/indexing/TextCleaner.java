@@ -1,6 +1,7 @@
 package indexing;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TextCleaner {
@@ -33,6 +34,19 @@ public class TextCleaner {
         result = cleanSpecialCharacters(list);
         result = cleanStopList(result);
         return result;
+    }
+    
+    public List<String> clean(String text) {
+    	List<String> result;
+    	result = cleanSpecialCharacters(text);
+    	result = cleanStopList(result);
+    	return result;
+    }
+    
+    private List<String> cleanSpecialCharacters(String text) {
+    	String text2 = text.replaceAll("\\p{Punct}", " ");
+    	String[] text3 = text2.split(" ");
+    	return Arrays.asList(text3);
     }
 
     private List<String> cleanSpecialCharacters(List<String> list) {

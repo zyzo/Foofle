@@ -21,8 +21,17 @@ public class FoofleSearch {
 		    return 0;
 		  }
 	};
-	public static List<String> search(String query) {
-		Map<String, Double> res = foo.mesure(query);
+	public static List<String> search(String[] query) {
+		List<String> splitQuery = new ArrayList<>();
+		for (String q: query) {
+			String[] split = q.split(" ");
+			for (String s: split) splitQuery.add(s);
+		}
+		String[] convertedQuery = new String[splitQuery.size()];
+		for (int i = 0; i < splitQuery.size(); i++) {
+			convertedQuery[i] = splitQuery.get(i);
+		}
+		Map<String, Double> res = foo.mesure(convertedQuery);
 		Map<Double, List<String>> reverseRes = new HashMap<>();
 		for (Entry<String, Double> e:res.entrySet()) {
 			List<String> listItems = reverseRes.get(e.getValue());
@@ -43,7 +52,7 @@ public class FoofleSearch {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(search("Adama Intouchables"));
+		System.out.println(search(new String[]{"personnes", "Intouchables"}));
 	}
 }
 /**

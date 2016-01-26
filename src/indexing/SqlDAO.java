@@ -38,7 +38,8 @@ public class SqlDAO {
     public List<FoofleItem> get(String term) {
         List<FoofleItem> items = new ArrayList<>();
         try {
-            ResultSet result = statement.executeQuery("SELECT * FROM LookupTable WHERE term='" + term + "'");
+            ResultSet result = statement.executeQuery("SELECT * FROM LookupTable WHERE term='" + term + "'"
+            		+ " COLLATE latin1_general_cs");
             while (result.next()) {
             	FoofleItem item = new FoofleItem();
                 item.setTerm(result.getString("term"));
@@ -46,6 +47,9 @@ public class SqlDAO {
                 item.setOccur(result.getInt("occur"));
                 item.setTfidf(result.getFloat("tfidf"));
                 item.setRobertsonTF(result.getFloat("robertsontf"));
+                item.setNormalizedTF(result.getFloat("normalizedtf"));
+                item.setCustomRobertsonTF(result.getFloat("customrobertsontf"));
+                item.setHTMLP(result.getFloat("htmlp"));
                 items.add(item);
             }
         } catch (SQLException e) {
@@ -54,18 +58,6 @@ public class SqlDAO {
         return items;
     }
 
-    public int insert(FoofleItem item) {
-        int status;
-        try {
-            status = statement.executeUpdate("INSERT INTO LookupTable (term, occur, link, tfidf, robertsontf) VALUES ('"
-                    + item.getTerm() + "', '" + item.getOccur() + "','" + item.getLink() + "','" + item.getTfidf() + "','" + item.getRobertsonTF() + "')");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return -1;
-        }
-        return status;
-    }
-    
     public int insert(List<FoofleItem> items) {
         int status;
         int limit = 1000;
@@ -75,10 +67,15 @@ public class SqlDAO {
         	PrintWriter writer = new PrintWriter(a);
         	int cnt = 0;
         	while (cnt < items.size()) {
-	        	String queryString = "INSERT INTO LookupTable (term, occur, link, tfidf, robertsontf) VALUES ";
+	        	String queryString = "INSERT INTO LookupTable (term, occur, link, tfidf, robertsontf, customrobertsontf, normalizedtf, htmlp) VALUES ";
 	        	for (int i = 0; i < limit && cnt < items.size(); i++) {
 	        		FoofleItem item = items.get(cnt);
-	        		queryString += "('" + item.getTerm() + "', '" + item.getOccur() + "','" + item.getLink() + "','" + item.getTfidf() + "','" + item.getRobertsonTF() + "')";
+	        		queryString += "('" + item.getTerm() + "', '" + item.getOccur() + "','" + item.getLink() + "','" 
+	        		+ item.getTfidf() + "','" 
+	        		+ item.getRobertsonTF() + "','"
+	        		+ item.getCustomRobertsonTF() + "', '"
+	        		+ item.getNormalizedTF() + "','"
+	        		+ item.getHtmlp() + "')";
 	        		if (i == limit - 1 || cnt == items.size() - 1) {
 	        			queryString += ";";
 	        		} else {
@@ -119,7 +116,6 @@ public class SqlDAO {
         item.setTerm("Firefox");
         item.setLink("www.firefox.com");
         item.setOccur(5);
-        System.out.println(dao.insert(item));
     }
 
 }

@@ -1,6 +1,7 @@
 package select;
 
 public class FoofleConfig {
-	public static Ponderation PONDERATION = Ponderation.NUM_OCCURS;
-	public static Evaluation EVALUATION = Evaluation.MESURE_COSINUS;
+	public static Ponderation PONDERATION = Ponderation.ROBERTSON_TF;
+	public static Evaluation EVALUATION = Evaluation.PRODUIT_SCALAIRE;
+	public static boolean WITH_REFORMULATE = true;
 }
