@@ -10,6 +10,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import indexing.FoofleUtils;
+import select.Evaluation;
+import select.FoofleConfig;
+import select.Ponderation;
 
 public class FoofleSearch {
 	
@@ -52,6 +55,8 @@ public class FoofleSearch {
 	}
 	
 	public static void main(String[] args) {
+		FoofleConfig.PONDERATION = Ponderation.CUSTOM_ROBERTSON_TF;
+		FoofleConfig.EVALUATION = Evaluation.PRODUIT_SCALAIRE;
 		System.out.println(search(new String[]{"personnes", "Intouchables"}));
 	}
 }

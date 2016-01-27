@@ -18,18 +18,12 @@ import select.Evaluation;
 import select.FoofleConfig;
 import select.Ponderation;
 import sparqlclient.FoofleReformulate;
+import sparqlclient.FoofleReformulate2;
+import sparqlclient.FoofleReformulate2_n;
 
 public class FoofleJudge {
 	public final String[][] QRELS = {
-			{"personnes", "Intouchables"},
-			{"lieu, naissance", "Omar Sy"},
-			{"personnes", "récompensées", "Intouchables"},
-			{"palmarès", "Globes de Cristal", "2012"},
-			{"membre", "jury", "Globes de Cristal", "2012"},
-			{"prix", "Omar Sy", "Globes de Cristal", "2012"},
-			{"lieu", "Globes Cristal", "2012"},
-			{"prix", "Omar Sy"},
-			{"acteurs", "joué avec", "Omar Sy"}
+			{"récompense", "Intouchables"}
 	};
 	public List<Map<String, Double>> EVAL = new ArrayList<>();
 
@@ -66,15 +60,32 @@ public class FoofleJudge {
 
 	private void initResult() {
 		QRELS_RESULT = new ArrayList<>();
-		for (String[] qrel: QRELS) {
-			if (FoofleConfig.WITH_REFORMULATE) {
-				List<String> enriched_qrels = FoofleReformulate.strategy1(qrel);
+
+		// reformulate queries
+		String[][] converts = new String[QRELS.length][];
+		if (FoofleConfig.WITH_REFORMULATE) {
+			for (int i = 0; i < QRELS.length; i++) {
+				String[] qrel = QRELS[i];
+				List<String> enriched_qrels = FoofleReformulate2.strategy2(qrel);
 				String[] convert = new String[enriched_qrels.size()];
 				enriched_qrels.toArray(convert);
-				QRELS_RESULT.add(FoofleSearch.search(convert));
-			} else {
-				QRELS_RESULT.add(FoofleSearch.search(qrel));
+				enriched_qrels = FoofleReformulate.strategy1(convert);
+				convert = new String[enriched_qrels.size()];
+				enriched_qrels.toArray(convert);/*
+				enriched_qrels = FoofleReformulate2_n.strategy3(convert);
+				convert = new String[enriched_qrels.size()];
+				enriched_qrels.toArray(convert);
+				enriched_qrels = FoofleReformulate.strategy1(convert);
+				convert = new String[enriched_qrels.size()];
+				enriched_qrels.toArray(convert);*/
+				//System.out.println(enriched_qrels.toString());
+				converts[i] = convert;
 			}
+		} else {
+			converts = QRELS;
+		}
+		for (String[] qrel: converts) {
+			QRELS_RESULT.add(FoofleSearch.search(qrel));
 		}
 	}
 
